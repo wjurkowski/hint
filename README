@@ -1,0 +1,145 @@
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Dzialajace wersje programu:
+
+VR_DSSP_filter7.pl (bez pliku z opcjami)	/hinch-detector/VR_petle/klasyfikacja/nr_06.2007
+VR_DSSP_filter8.pl opcje-VR_DSSP		/hinch-detector/VR_petle/klasyfikacja/nr_09.2007
+VR_DSSP-DIST_filter2.pl	opcje-VR_DSSP-DIST3	/hinch-detector/VR_petle/klasyfikacja/nr_09.2007 (run2)
+VR_DSSP-DIST_filter2.pl	opcje-VR_DSSP-DIST3	/hinch-detector/Rama-dist
+VR_DSSP-DIST_filter15.pl opcje-VR_DSSP-DIST4	/hinch-detector/Razem - podstawowa wersja
+VR_DSSP-DIST_filter20.pl opcje-choufas		/hinch-detector/Razem - wsp. chou-fasmana
+VR-DSSP-DIST_filter24.pl opcje-lhb		/hinch-detector/Razem/wybrane_klasy	#Wykresy  hydrofobowosci w oknie, zapisanie sekwencji
+VR-DSSP-DIST_filter25.pl opcje-lhb		/hinch-detector/Razem/wybrane_klasy	#Wykresy  hydrofobowosci w oknie v2
+hinge_alchemy2.pl opcje-kont			/hinch-detector/Razem/	#zapisanie PDB motywow (do tworzenia tablic kontyngencji)
+hinge_alchemy8.pl opcje-lhb2			/hinch-detector/Razem/wybrane_klasy	#ostatnia wersja bazujaca na wszystkich danych
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Opcje sterowania (wersja najnowsza)
+
+----MAIN
+run_mode=	#sposob uruchomienia:
+	1 - VR-dssp - analiza VR vs. dssp
+	2 - Dist-dssp	analiza odleglosci na mapie RCh vs. dssp
+	3 - VR-dist-dssp jedno i drugie
+Wszytskie dane wejsciowe powinny znajdowac sie w katalogu biezacym lub powinna byc podana do nich odpowiednia sciezka
+
+#listy nazw plikow z danymi 
+dist-list [dist-lista]	odleglosci na mapie RCh
+vr-list [vr-lista]	wartosci V i lnR	
+dssp-list dssp-lista	wynik dzialania dssp
+
+#nazwy katalogów z danymi (podane wzgledem katalogu biezacego)
+dssp_dir [dsspowanie]
+vr_dir [vr-siatowanie]
+dist_dir [fipsi-dist]
+inppdb_dir [pdb_chains]
+
+----OUTPUT
+Glowny katalog wynikowy (tu tworzone sa wszystkie pliki i foldery wynikowe)
+dla run_mode=1
+	"vr_dir-dssp_dir"
+dla run_mode=2
+	"dist_dir-dssp_dir"
+dla run_mode=3
+	"vr_dir-dist_dir-dssp_dir"
+
+#nazwa pliku glownego outputu 	
+output vrdssp-digest.out
+
+!!!!!!!!!!!!!dla run_mode=1,2,3
+!!!!!!!!	#katalog z wstepnie obrobionymi danymi dssp	WYCOFANY
+
+dla run_mode=1,3
+	#katalog z zebranymi razem danymi VR i dssp
+	vr_dssp
+	#pliki o nazwie:
+	vrname."dssp.vr"	gdzie vrname to nazwa pliku z danymi z VR (bez rozszerzenia) 
+
+dla average=1
+	#nazwa pliku z wynikami usrednionymi
+	averout averaged-vrdssp.dat
+
+dla sec_sort=1
+	#nazwy plikow na dane typu kolejno: wszystko,helikalne,beta,zwroty,petle
+	backout [back-vrdssp.dat]
+	alfaout [helix-vrdssp.dat]
+	betaout [beta-vrdssp.dat]
+	turnout [turn-vrdssp.dat]
+	loopout [loop-vrdssp.dat]
+dla print_motifs=1
+	#nazwy plikow wynikowych z opisem kolejnych motywow	
+	motifout [motif-dssp.dat]
+	Tworzone odpowiednio: hinge_motifout, helix_motifout i beta_motifout 		
+dla AA_stat=1
+	#nazwy plikow wynikowych ze statystykamidla  kolejnych motywow	
+	motifstatout [motif-stat-dssp.dat]
+	Tworzone odpowiednio: hinge_motifstatout, helix_motifstatout i beta_motifstatout 
+dla patterns=1
+	#nazwa pliku z opisem wzorcow oddzialywan
+	patternout [feat_patterns.dat]	
+dla lhb_coeff=1
+	#nazwa katalogu w którym zapisane są wyniki obliczen funkcji przewidujacych
+	lhbdir [lhb_funct]
+	#nazwa plików z wartosciami bez uśredniania w oknie:
+	pdb."_lhb.dat" gdzie $pdb jest fragmentem nazwy pliku dssp od poczatku do ostatniej kropki
+	#nazwa z uśrednianiem:
+	pdb"."_w_lhb.dat"
+dla printseq=1
+	#nazwa katalogu do zapisu sekwencji
+	seqdir [seq_fasta]
+	#nazwy plikow:
+	pdb."_fasta" gdzie $pdb jest fragmentem nazwy pliku dssp od poczatku do ostatniej kropki
+dla printpdb=1
+	#nazwy katalogów dla struktur w formacie pdb kolejno 
+	lpdbdir [pdb_loops]	pętle
+	hpdbdir [pdb_helix]	helisy
+	bpdbdir [pdb_beta]	beta
+	#tworzone sa pliki o nazwach:
+	pdb"_loop_".$k.".pdb"	dla petli
+	pdb"_helix_".$k.".pdb"	dla helis
+	pdb"_beta_".$k.".pdb"	dla beta
+
+----FUNKCJE
+
+1. Wstepne
+Wypisywanie wartosci VR, odleglosci posortowanych dla struktur drugorzedowych:	sec_sort=1
+Usrednienie wartosci dla calego bialka:		average 1
+
+2.Definicja motywow i analiza
+definiuj motywy:	motifs=1
+
+zapisuj motywy:		print_motifs=1
+
+zapisuj statystyki dla poszczeglnych motywow:	AA_stat=1 (dziala niezaleznie, nie wymaga print_motifs=1)
+
+minimalna dlugosc motywu:	min_len [5]	
+Nie wplywa na proces tworzenia motywow, robi selekcje dopiero przy analizie. Nie ma zatem wplywu na oznakowanie centrów i brzegów motywow (odpowiednie wspolczynniki Chou-fasmana sa liczone jak dla min_len=1) 
+
+Poszukiwanie rozkladu oddzialywan:	patterns=1	
+Sprawdzane sa kombinacje n-tego i kolejnych aminokwasow pod katem zaburzania pola oddzialywan (polarne i niepolarne, dodatnio i ujemnie naladowane aminokwasy po tej samej stronie arkusza lub helisy). Znalezione zaburzenie oznaczane jest	znakami: HP, PH, +-, -+ i zapisane do pliku. Fakt istnienia zaburzenia wody jest tez użyty w funkcji przewidujacej (patrz nizej)
+
+Obliczanie wspolczynnikow Chou-Fasmana:	chou_fasman=1
+Obliczane jest policzone po wszystkich bialkach prawdopodobienstwo znalezienia AA w motywach strukturalnych podzielone przez prawdopodobienstwo znalezienia danego AA w calych lancuchach. Wspolczynniki liczone osobno dla calych motywow, jądra i brzegów. Brzegi nachodza na 2 reszty sasiedniego motywu. 
+
+Obliczanie funkcji przewidujacych:	lhb_coeff=1
+Parametry róznicujące struktury zebrane sa do jednego pliku z wartosciami dla kolejnych reszt razem z obliczona na ich podstawie funkcją przewidujacą.
+	1 wersja: 
+	helisy: hydrofobowosc*wsp. chou-fasmana
+	beta: hydrofobowosc*wsp. chou-fasmana
+	petle: hydrofobowosc-wsp. chou-fasmana
+Usrednianie w oknie obliczne tylk odla hydrofobowosci:	lhb_window [3]
+
+Drukowanie sekwencji:	printseq=1
+Sekwencje drukowane sa w wygodnym do wydruku i odczytu formacie. Linie dlugie na 100 AA z zaznaczonymi numerami co 10 AA.
+
+
+
+
+		
+
+
+
+
+
+
+
+

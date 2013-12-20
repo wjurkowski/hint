@@ -1,0 +1,13 @@
+
+Zrobienie modulu:
+http://en.wikipedia.org/wiki/Perl_module#Examples
+http://members.pcug.org.au/~rcook/PerlModule_HOWTO.html#N1007F
+
+ h2xs -b 5.6.1 -AX Patterns
+
+http://members.pcug.org.au/~rcook/PerlModule_HOWTO.html
+http://math.univ.gda.pl/~piotao/Perl/zadania/70_zadania.php
+
+
+dodac typ aminokwasu do outputu - zalatane w VR-DSSP-DIST_filter3.pl
+

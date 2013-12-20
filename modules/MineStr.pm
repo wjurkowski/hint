@@ -1,0 +1,422 @@
+package MineStr;
+use strict;
+use warnings;
+
+require Exporter;
+use vars qw(@ISA @EXPORT $VERSION);
+our @ISA = qw(Exporter);
+our @EXPORT = qw(secsort avsecsort pdbread motdef);
+$VERSION=1.0;
+
+sub secsort {
+	$l_rsum=0;
+	$l_vsum=0;
+	$n_rsum=0;
+	$n_vsum=0;
+	$h_rsum=0;
+	$h_vsum=0;
+	$p_rsum=0;
+	$p_vsum=0;
+	$z_rsum=0;
+	$z_vsum=0;
+	$lcnt=0;
+	$ncnt=0;
+	$hcnt=0;
+	$pcnt=0;
+	$zcnt=0;
+	$loop[0]="N";
+
+for $j(3..($#ord-2)){	# iteracja po bialka do posortowania wynikow VR, dist, dssp
+ 	 if($loop[$j] eq 'L'){
+	  if($params{'average'} == 1){$lcnt++;
+ 	  $l_rsum=$l_rsum+$vr[$j][2];
+ 	  $l_vsum=$l_vsum+$vr[$j][3];}
+	  if($params{'run_mode'} == 1){
+	  printf LOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+	  }
+	  elsif($params{'run_mode'} == 2){
+	  printf LOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }
+	  elsif($params{'run_mode'} == 3){
+	  printf LOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }	
+	 }
+ 	 elsif($loop[$j] eq 'H'){
+	  if($params{'average'} == 1){$ncnt++;
+ 	  $n_rsum=$n_rsum+$vr[$j][2];
+ 	  $n_vsum=$n_vsum+$vr[$j][3];
+ 	  $hcnt++;
+	  $h_rsum=$h_rsum+$vr[$j][2];
+ 	  $h_vsum=$h_vsum+$vr[$j][3];}
+	  if($params{'run_mode'} == 1){
+	  printf HOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+	  }
+	  elsif($params{'run_mode'} == 2){
+	  printf HOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }
+	  elsif($params{'run_mode'} == 3){
+	  printf HOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }	
+ 	 } 
+ 	 elsif($loop[$j] eq 'P'){
+	  if($params{'average'} == 1){$ncnt++;
+ 	  $n_rsum=$n_rsum+$vr[$j][2];
+ 	  $n_vsum=$n_vsum+$vr[$j][3];
+	  $pcnt++;
+	  $p_rsum=$p_rsum+$vr[$j][2];
+	  $p_vsum=$p_vsum+$vr[$j][3];}
+	  if($params{'run_mode'} == 1){
+	  printf BOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+#	print "$pat2\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+	  }
+	  elsif($params{'run_mode'} == 2){
+	  printf BOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }
+	  elsif($params{'run_mode'} == 3){
+	  printf BOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }	
+ 	 } 
+ 	 elsif($loop[$j] eq 'Z'){
+	  if($params{'average'} == 1){$ncnt++;
+ 	  $n_rsum=$n_rsum+$vr[$j][2];
+ 	  $n_vsum=$n_vsum+$vr[$j][3];
+	  $zcnt++;
+	  $z_rsum=$z_rsum+$vr[$j][2];
+	  $z_vsum=$z_vsum+$vr[$j][3];}
+	  if($params{'run_mode'} == 1){
+	  printf TOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+	  }
+	  elsif($params{'run_mode'} == 2){
+	  printf TOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }
+	  elsif($params{'run_mode'} == 3){
+	  printf TOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }		
+ 	 } 
+	  #wszystkie
+ 	  if($params{'run_mode'} == 1){
+	  printf VROUT "$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+	  printf WOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+#	print "$pat2\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\n";
+	  }
+	  elsif($params{'run_mode'} == 2){
+	  printf WOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }
+	  elsif($params{'run_mode'} == 3){
+	  printf WOUT "$pdb\t$j\t$ord[$j]\t$loop[$j]\t$vr[$j][2]\t$vr[$j][3]\t$dist[$j][1]\t$dist[$j][2]\t$dist[$j][3]\t$dist[$j][4]\n";
+	  }		
+}#koniec iteracji sortowania
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	if($ncnt ==0){
+	printf GOUT "no non-loop structures in chain\n";
+	$n_av_r=0;
+	$n_av_v=0;
+	$n_rstdev=0;
+	$n_vstdev=0;
+	}
+	if($lcnt ==0){
+	printf GOUT "no loop structures in chain\n";
+	$l_av_r=0;
+	$l_av_v=0;
+	$l_rstdev=0;
+	$l_vstdev=0;
+	}
+	if($hcnt ==0){
+	printf GOUT "no helical structures in chain\n";
+	$h_av_r=0;
+	$h_av_v=0;
+	$h_rstdev=0;
+	$h_vstdev=0;
+	}
+	if($pcnt ==0){
+	printf GOUT "no beta-sheet structures in chain\n";
+	$p_av_r=0;
+	$p_av_v=0;
+	$p_rstdev=0;
+	$p_vstdev=0;
+	}
+	if($zcnt ==0){
+	printf GOUT "no turn structures in chain\n";
+	$z_av_r=0;
+	$z_av_v=0;
+	$z_rstdev=0;
+	$z_vstdev=0;
+	}
+}
+
+sub avsecsort{
+if($ncnt !=0){	
+ 	$n_av_r=$n_rsum/$ncnt;
+ 	$n_av_v=$n_vsum/$ncnt;
+ 	}
+	if($lcnt !=0){	
+	$l_av_r=$l_rsum/$lcnt;
+ 	$l_av_v=$l_vsum/$lcnt;
+	}
+	if($hcnt !=0){	
+	$h_av_r=$h_rsum/$hcnt;
+	$h_av_v=$h_vsum/$hcnt;
+	}
+	if($pcnt !=0){	
+	$p_av_r=$p_rsum/$pcnt;
+	$p_av_v=$p_vsum/$pcnt;
+	}
+	if($zcnt !=0){	
+	$z_av_r=$z_rsum/$zcnt;
+	$z_av_v=$z_vsum/$zcnt;
+	}
+ #odchylenie standardowe
+ 	$l_rsumkw=0;
+ 	$l_vsumkw=0;
+ 	$n_rsumkw=0;
+ 	$n_vsumkw=0;
+ 	$h_rsumkw=0;
+ 	$h_vsumkw=0;
+ 	$p_rsumkw=0;
+ 	$p_vsumkw=0;
+ 	$z_rsumkw=0;
+ 	$z_vsumkw=0;
+ 	for $j(3..($#ord-2)){
+  	
+  	 if($loop[$j] eq "L"){
+  	 $l_rkw=($vr[$j][2])**2;
+  	 $l_vkw=($vr[$j][3])**2;
+  	 $l_rsumkw=$l_rsumkw+$l_rkw;
+  	 $l_vsumkw=$l_vsumkw+$l_vkw;
+  	 }
+  	 elsif($loop[$j] eq 'H'){
+	 $n_rkw=($vr[$j][2])**2;
+  	 $n_vkw=($vr[$j][3])**2;
+  	 $n_rsumkw=$n_rsumkw+$n_rkw;
+  	 $n_vsumkw=$n_vsumkw+$n_vkw;
+	 $h_rkw=($vr[$j][2])**2;
+	 $h_vkw=($vr[$j][3])**2;
+	 $h_rsumkw=$h_rsumkw+$h_rkw;
+	 $h_vsumkw=$h_vsumkw+$h_vkw;
+  	 }
+  	 elsif($loop[$j] eq 'P'){
+	 $n_rkw=($vr[$j][2])**2;
+  	 $n_vkw=($vr[$j][3])**2;
+  	 $n_rsumkw=$n_rsumkw+$n_rkw;
+  	 $n_vsumkw=$n_vsumkw+$n_vkw;
+	 $p_rkw=($vr[$j][2])**2;
+	 $p_vkw=($vr[$j][3])**2;
+	 $p_rsumkw=$p_rsumkw+$p_rkw;
+	 $p_vsumkw=$p_vsumkw+$p_vkw;
+  	 }
+  	 elsif($loop[$j] eq 'Z'){
+	 $n_rkw=($vr[$j][2])**2;
+  	 $n_vkw=($vr[$j][3])**2;
+  	 $n_rsumkw=$n_rsumkw+$n_rkw;
+  	 $n_vsumkw=$n_vsumkw+$n_vkw;
+	 $z_rkw=($vr[$j][2])**2;
+	 $z_vkw=($vr[$j][3])**2;
+	 $z_rsumkw=$z_rsumkw+$z_rkw;
+	 $z_vsumkw=$z_vsumkw+$z_vkw;
+  	 }
+ 	}
+ 
+	if($lcnt !=0){	
+ 	$l_rstdev=sqrt(($l_rsumkw/$lcnt)-($l_av_r**2));
+ 	$l_vstdev=sqrt(($l_vsumkw/$lcnt)-($l_av_v**2));
+	}
+ 	if($ncnt !=0){	
+	$n_rstdev=sqrt(($n_rsumkw/$ncnt)-($n_av_r**2));
+ 	$n_vstdev=sqrt(($n_vsumkw/$ncnt)-($n_av_v**2));
+ 	}
+ 	if($hcnt !=0){	
+	$h_rstdev=sqrt(($h_rsumkw/$hcnt)-($h_av_r**2));
+	$h_vstdev=sqrt(($h_vsumkw/$hcnt)-($h_av_v**2));
+ 	}
+ 	if($pcnt !=0){	
+	$p_rstdev=sqrt(($p_rsumkw/$pcnt)-($p_av_r**2));
+	$p_vstdev=sqrt(($p_vsumkw/$pcnt)-($p_av_v**2));
+ 	}
+ 	if($zcnt !=0){	
+	$z_rstdev=sqrt(($z_rsumkw/$zcnt)-($z_av_r**2));
+	$z_vstdev=sqrt(($z_vsumkw/$zcnt)-($z_av_v**2));
+ 	}
+
+printf AOUT ("%7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f\n",$l_av_r,$l_rstdev,$l_av_v,$l_vstdev,$n_av_r,$n_rstdev,$n_av_v,$n_vstdev,$h_av_r,$h_rstdev,$h_av_v,$h_vstdev,$p_av_r,$p_rstdev,$p_av_v,$p_vstdev,$z_av_r,$z_rstdev,$z_av_v,$z_vstdev); 
+}
+
+sub pdbread{
+printf GOUT "reading pdb files...\n";
+$katalog="$rootdir/$kat_pdb";
+chdir "$katalog" or die "Nie moge wejsc do $kat_pdb: $!\n";
+printf GOUT "changing directory to: ../$kat_pdb\n";
+
+#check if all files are present, list of *.pdb files and *.dssp files should match
+$matched=0;
+ foreach $pdbn (@lipdb){#iteracja po plikach pdb
+ $pat1=substr($pdbn,0,7);
+ $pat1=~tr/A-Z/a-z/;
+ $pat2=substr($dname,0,7);
+ $pat2=~tr/A-Z/a-z/;
+	if($pat1 eq $pat2){
+	$matched=1;
+	$pdbname=$pdbn;
+	last;
+	}
+ }
+  	if ($matched==0){
+	printf GOUT "no PDB file found which matches dssp file: $dname: $!\n";
+	next;
+	}
+
+printf GOUT "pdb file analyzed:\t$pdbname\n";
+open(PDBINP, "<$pdbname") or die "Can’t open input file: $!";
+my @pidibi=<PDBINP>;
+chomp @pidibi;
+close (PDBINP);
+
+$pr=0;
+$nr=0;
+$na=0;
+	foreach $dane(@pidibi){
+		$info=substr($dane, 0, 4);
+		if ($info eq "ATOM"){
+		$reszta=substr($dane, 22, 8);
+#		print "$pdb\t$pr\t\t$reszta\t$nr\t$na\t$at[$nr]\n";
+#		$reszta=~s/(\d+)(\D+)/$1/}
+			if($reszta ne $pr){
+		 	$at[$nr]=$na;
+#		print "$pdb\t$pr\t\t$reszta\t$nr\t$na\t$at[$nr]\n";
+			$pr=$reszta;
+			$nr++;
+		 	$na=0;}
+		$na++;			
+		$pdbl[$nr][$na]=$dane;}
+	}
+#	$nr++;
+	$at[$nr]=$na;#dla ostatniego
+}
+
+sub motdef {
+$lnr=0;
+$hnr=0;
+$bnr=0;
+$mnr=0;
+$lp=0;
+@mlen=();
+for $j(1..$#ord){
+$lstate[$j]=-2.0;
+$hstate[$j]=-2.0;
+$bstate[$j]=-2.0;}
+ for $j(1..$#ord){#zbieranie motywow w bialku
+ 	if($loop[$j] eq 'L' or $loop[$j] eq 'Z'){ #kolejny motyw hingowy
+	$lstate[$j]=-0.5;
+		if($loop[$j-1] eq 'H'){
+		$mlen[$mnr]=$lp;
+ 		$hnr++;
+		$mnr++;
+ 		$lp=0;}
+		elsif($loop[$j-1] eq 'P'){
+		$mlen[$mnr]=$lp;
+ 		$bnr++;
+		$mnr++;
+ 		$lp=0;}
+ 	$lp++;
+ 	$motif[$mnr][$lp][0]=$pdb;
+ 	$motif[$mnr][$lp][1]=$ord[$j];
+	$motif[$mnr][$lp][2]=$struct[$j];
+ 	$motif[$mnr][$lp][3]=$vr[$j][2];
+ 	$motif[$mnr][$lp][4]=$vr[$j][3];
+ 	$motif[$mnr][$lp][5]=$dist[$j][1];
+ 	$motif[$mnr][$lp][6]=$dist[$j][2];
+ 	$motif[$mnr][$lp][7]=$dist[$j][3];
+ 	$motif[$mnr][$lp][8]=$dist[$j][4];
+	$motif[$mnr][$lp][9]=$at[$j];
+	$motif[$mnr][$lp][10]=$j;
+	$mottyp[$mnr]='L';
+		if($params{'printpdb'}==1){
+		for $k(1..$at[$j]){
+		$motpdb[$mnr][$lp][$k]=$pdbl[$j][$k];}
+		}
+  	}
+	if($loop[$j] eq 'H'){ #kolejny motyw helikalny
+	$hstate[$j]=-0.5;
+		if($loop[$j-1] eq 'L' or $loop[$j-1] eq 'Z'){
+		$mlen[$mnr]=$lp;
+		$mnr++;
+ 		$lnr++;
+ 		$lp=0;}
+		elsif($loop[$j-1] eq 'P'){
+		$mlen[$mnr]=$lp;
+		$mnr++;
+ 		$bnr++;
+ 		$lp=0;}
+	$lp++;
+ 	$motif[$mnr][$lp][0]=$pdb;
+ 	$motif[$mnr][$lp][1]=$ord[$j];
+	$motif[$mnr][$lp][2]=$struct[$j];
+ 	$motif[$mnr][$lp][3]=$vr[$j][2];
+ 	$motif[$mnr][$lp][4]=$vr[$j][3];
+ 	$motif[$mnr][$lp][5]=$dist[$j][1];
+ 	$motif[$mnr][$lp][6]=$dist[$j][2];
+ 	$motif[$mnr][$lp][7]=$dist[$j][3];
+ 	$motif[$mnr][$lp][8]=$dist[$j][4];
+	$motif[$mnr][$lp][9]=$at[$j];
+	$motif[$mnr][$lp][10]=$j;
+	$mottyp[$mnr]='H';
+		if($params{'printpdb'}==1){
+		for $k(1..$at[$j]){
+		$motpdb[$mnr][$lp][$k]=$pdbl[$j][$k];}
+		}
+  	}
+	if($loop[$j] eq 'P'){ #kolejny motyw beta
+	$bstate[$j]=-0.5;
+		if($loop[$j-1] eq 'L' or $loop[$j-1] eq 'Z'){
+		$mlen[$mnr]=$lp;
+		$mnr++;
+ 		$lnr++;
+ 		$lp=0;}
+		elsif($loop[$j-1] eq 'H'){
+		$mlen[$mnr]=$lp;
+ 		$mnr++;
+		$hnr++;	
+ 		$lp=0;}
+	$lp++;
+ 	$motif[$mnr][$lp][0]=$pdb;
+ 	$motif[$mnr][$lp][1]=$ord[$j];
+	$motif[$mnr][$lp][2]=$struct[$j];
+ 	$motif[$mnr][$lp][3]=$vr[$j][2];
+ 	$motif[$mnr][$lp][4]=$vr[$j][3];
+ 	$motif[$mnr][$lp][5]=$dist[$j][1];
+ 	$motif[$mnr][$lp][6]=$dist[$j][2];
+ 	$motif[$mnr][$lp][7]=$dist[$j][3];
+ 	$motif[$mnr][$lp][8]=$dist[$j][4];
+	$motif[$mnr][$lp][9]=$at[$j];
+	$motif[$mnr][$lp][10]=$j;
+	$mottyp[$mnr]='B';
+		if($params{'printpdb'}==1){
+		for $k(1..$at[$j]){
+		$motpdb[$mnr][$lp][$k]=$pdbl[$j][$k];}
+		}
+  	}	
+ }#koniec iteracji po bialku
+
+#zapisanie obecnosci i dlugosci ostatniego elementu 	
+	if($loop[$#ord] eq 'L' or $loop[$#ord] eq 'Z'){
+	$mlen[$mnr]=$lp;
+	$lp=0;
+	$hnr=$hnr-1;
+	$bnr=$bnr-1;
+	}
+	elsif($loop[$#ord] eq 'H'){
+	$mlen[$mnr]=$lp;
+ 	$lp=0;
+	$lnr=$lnr-1;
+	$bnr=$bnr-1;
+	}
+	elsif($loop[$#ord] eq 'P'){
+	$mlen[$mnr]=$lp;
+ 	$lp=0;
+	$lnr=$lnr-1;
+	$hnr=$hnr-1;
+	}
+
+
+}
+1;
+
